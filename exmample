@@ -1,0 +1,62 @@
+package org.example.model;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+
+public class SchoolRepository {
+
+
+    private EntityManager entityManager;
+    private EntityManagerFactory emf;
+
+    //usual one
+    public SchoolRepository() {
+        this.emf = Persistence.createEntityManagerFactory("database-configuration");
+        this.entityManager = this.emf.createEntityManager();
+    }
+
+    // for testing
+    public SchoolRepository(String test) {
+        this.emf = Persistence.createEntityManagerFactory("database-configuration");
+        this.entityManager = this.emf.createEntityManager();
+    }
+
+    public School add(School school) {
+        entityManager.getTransaction().begin();
+        entityManager.persist(school);
+        entityManager.getTransaction().commit();
+        return school;
+    }
+
+    // jpa find
+    public School find(Long id) {
+        return entityManager.find(School.class, id);
+
+    }
+    
+    //jpa update
+    public School update(School school) {
+        School schoolToUpdate = find(school.getId());
+        entityManager.getTransaction().begin();
+        schoolToUpdate.setCity(school.getCity());
+        schoolToUpdate.setName(school.getName());
+        entityManager.getTransaction().commit();
+        return schoolToUpdate;
+    }
+
+    //jpa delete
+    public void delete(School school) {
+        entityManager.getTransaction().begin();
+        entityManager.remove(school);
+        entityManager.getTransaction().commit();
+
+    }
+    
+    //10.04 jpa
+    public void close() {
+        this.entityManager.close();
+        this.emf.close();
+    }
+}
